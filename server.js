@@ -69,6 +69,40 @@ app.get('/api/movies',async(req,res)=>{
     }
 })
 
+app.get('/api/movies/:id',async(req,res)=>{
+    const movieId = req.movie.id;
+    try{
+        const checkQuery = `select * from movies where id`;
+const result = await pool.query(checkQuery,[movieId])
+if(result.rows.length === 0){
+    return res.status(404).json({success:false,error:"movie not found"})
+}
+const movie = result.rows[0]
+res.status(201).json({success:true,movie})
+    }catch(err){
+        res.status(500).json({success:false,err:"movie could not be fetched"})
+    }
+})
+app.put("/api/movies/:id",async(req,res)=>{
+    const movieId = req.params.id;
+    const {title,description,release_date,genre,post_url}= req.body;
+    try{
+        const checkQuery = `select * from movies where id = $1`;
+        const checkRes = await pool.query(checkQuery,[movieId]);
+        if(checkRes.rowCount.length ===0){
+            return res.status(404).json({success:false,error:"movie not found"})
+        }
+        const updateQuery = `update movies set title = $1,description = $2,release_date=$3,genre = $4,post_url = $4,updated_at = CURRENT_TIMESTAMP,WHERE id = $6`
+        const updatedValues = [title,description,release_date,genre,post_url,movieId]
+        await pool.query(updateQuery,updatedValues)
+        res.status(200).json({ success: true, message: 'Movie updated successfully' });
+    } catch (error) {
+        console.error('Error updating movie by ID:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+    
+})
+
 app.delete('/api/movies/:id',async(req,res)=>{
     const movieId = req.params.id
     try{
