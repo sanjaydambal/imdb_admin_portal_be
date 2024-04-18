@@ -70,9 +70,10 @@ app.get('/api/movies',async(req,res)=>{
 })
 
 app.get('/api/movies/:id',async(req,res)=>{
-    const movieId = req.movie.id;
+    const movieId = req.params.id;
+    console.log(movieId)
     try{
-        const checkQuery = `select * from movies where id`;
+        const checkQuery = `select * from movies where id=$1`;
 const result = await pool.query(checkQuery,[movieId])
 if(result.rows.length === 0){
     return res.status(404).json({success:false,error:"movie not found"})
@@ -85,15 +86,15 @@ res.status(201).json({success:true,movie})
 })
 app.put("/api/movies/:id",async(req,res)=>{
     const movieId = req.params.id;
-    const {title,description,release_date,genre,post_url}= req.body;
+    const {title,description,release_date,genre,poster_url}= req.body;
     try{
-        const checkQuery = `select * from movies where id = $1`;
+        const checkQuery = 'select * from movies where id = $1';
         const checkRes = await pool.query(checkQuery,[movieId]);
         if(checkRes.rowCount.length ===0){
             return res.status(404).json({success:false,error:"movie not found"})
         }
-        const updateQuery = `update movies set title = $1,description = $2,release_date=$3,genre = $4,post_url = $4,updated_at = CURRENT_TIMESTAMP,WHERE id = $6`
-        const updatedValues = [title,description,release_date,genre,post_url,movieId]
+        const updateQuery = `update movies set title = $1,description = $2,release_date=$3,genre = $4,poster_url = $5,updated_at = CURRENT_TIMESTAMP WHERE id = $6`
+        const updatedValues = [title,description,release_date,genre,poster_url,movieId]
         await pool.query(updateQuery,updatedValues)
         res.status(200).json({ success: true, message: 'Movie updated successfully' });
     } catch (error) {
