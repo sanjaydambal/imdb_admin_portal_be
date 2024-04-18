@@ -78,6 +78,7 @@ if(checkRes.rows.length === 0){
     return res.status(404).json({success:false,error:'movie not found'})
 }
 const deleteQuery = `delete from movies where id=$1`;
+console.log(deleteQuery)
 await pool.query(deleteQuery,[movieId])
 res.status(201).json({success:true,message:"movie deleted successfully"})
     }catch(err){
