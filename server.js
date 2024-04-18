@@ -69,6 +69,21 @@ app.get('/api/movies',async(req,res)=>{
     }
 })
 
+app.delete('/api/movies/:id',async(req,res)=>{
+    const movieId = req.params.id
+    try{
+const checkQuery = `select * from movies where id=$1`;
+const checkRes = await pool.query(checkQuery,[movieId])
+if(checkRes.rows.length === 0){
+    return res.status(404).json({success:false,error:'movie not found'})
+}
+const deleteQuery = `delete from movies where id=$1`;
+await pool.query(deleteQuery,[movieId])
+res.status(201).json({success:true,message:"movie deleted successfully"})
+    }catch(err){
+res.status(500).json({success:false,err:"internal server error"})
+    }
+})
 app.listen(PORT,()=>{
 console.log(`server is running on ${PORT} `)
 })
