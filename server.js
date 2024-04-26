@@ -1,10 +1,7 @@
 const express = require('express');
-
-const bcrypt = require('bcrypt');
 const { Pool } = require('pg');
 require('dotenv').config();
 const app = express();
-const jwt = require('jsonwebtoken');
 const PORT = process.env.PORT || 4000;
 const cors = require('cors');
 app.use(cors());
